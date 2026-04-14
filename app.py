@@ -4,7 +4,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello GitOps v3!"
+    return "Hello GitOps!"
+
+@app.route("/health")
+def health():
+    return "OK"
 
 
 if __name__ == "__main__":
