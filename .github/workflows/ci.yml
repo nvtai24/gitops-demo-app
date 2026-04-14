@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,15 +24,26 @@ jobs:
     - name: Push image
       run: docker push nvtai24/gitops-demo:${{ github.sha }}
 
+    - name: Checkout manifest repository
+      uses: actions/checkout@v3
+      with:
+        repository: nvtai24/gitops-demo-manifest
+        token: ${{ secrets.GH_TOKEN }}
+        path: gitops-demo-manifest
+
     - name: Update manifest
       run: |
-        git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/nvtai24/gitops-demo-manifest.git
+        set -euo pipefail
         cd gitops-demo-manifest
-
         sed -i "s|image: .*|image: nvtai24/gitops-demo:${{ github.sha }}|" deployment.yaml
 
         git config user.email "ci@github.com"
         git config user.name "github-actions"
 
-        git commit -am "update image"
-        git push
+        if ! git diff --quiet; then
+          git add deployment.yaml
+          git commit -m "update image to nvtai24/gitops-demo:${{ github.sha }}"
+          git push
+        else
+          echo "No manifest changes detected; skipping commit and push."
+        fi
