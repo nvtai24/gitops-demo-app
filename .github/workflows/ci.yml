@@ -23,7 +23,7 @@ jobs:
 
     - name: Update manifest
       run: |
-        git clone https://github.com/nvtai24/gitops-demo-manifest
+        git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/nvtai24/gitops-demo-manifest.git
         cd gitops-demo-manifest
 
         sed -i "s|image: .*|image: nvtai24/gitops-demo:${{ github.sha }}|" deployment.yaml
