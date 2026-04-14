@@ -14,7 +14,7 @@ jobs:
 
     - name: Login DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
-      -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build image
       run: docker build -t nvtai24/gitops-demo:${{ github.sha }} .
@@ -23,14 +23,14 @@ jobs:
       run: docker push nvtai24/gitops-demo:${{ github.sha }}
 
     - name: Update manifest
-  run: |
-    git clone https://github.com/nvtai24/gitops-demo-manifest
-    cd gitops-demo-manifest
+      run: |
+        git clone https://github.com/nvtai24/gitops-demo-manifest
+        cd gitops-demo-manifest
 
-    sed -i "s|image: .*|image: nvtai24/gitops-demo:${{ github.sha }}|" deployment.yaml
+        sed -i "s|image: .*|image: nvtai24/gitops-demo:${{ github.sha }}|" deployment.yaml
 
-    git config user.email "ci@github.com"
-    git config user.name "github-actions"
+        git config user.email "ci@github.com"
+        git config user.name "github-actions"
 
-    git commit -am "update image"
-    git push
+        git commit -am "update image"
+        git push
