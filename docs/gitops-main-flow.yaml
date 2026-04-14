@@ -1,0 +1,51 @@
+document:
+  title: GitOps Main Flow
+  version: 1.0
+  language: en
+  summary: >-
+    This document describes the primary CI/CD GitOps flow from developer commit
+    to Kubernetes rollout.
+
+flow:
+  - step: 1
+    name: Developer Push Code
+    actor: Developer
+    action: Push code changes to the application repository.
+    output: A new commit on the tracked branch.
+
+  - step: 2
+    name: GitHub Actions Pipeline
+    actor: GitHub Actions
+    action:
+      - Build container image.
+      - Push image to Docker Hub.
+      - Update manifest repository with the new image tag.
+    output: Updated deployment manifest in the manifest repository.
+
+  - step: 3
+    name: ArgoCD Detects Change
+    actor: ArgoCD
+    action: Detect new commit in the manifest repository and sync desired state.
+    output: Kubernetes resources are updated to match the new manifest.
+
+  - step: 4
+    name: Kubernetes Rollout
+    actor: Kubernetes
+    action: Roll out the new application version.
+    output: Application runs with the updated container image.
+
+diagram_text: |
+  Developer push code
+          |
+          v
+  GitHub Actions
+          |
+          |- build image
+          |- push DockerHub
+          '- update manifest repo
+                  |
+                  v
+  ArgoCD detect change
+          |
+          v
+  Kubernetes rollout
